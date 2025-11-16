@@ -1,0 +1,80 @@
+%{
+open Ast
+%}
+
+%token <int> INT
+%token <float> FLOAT
+%token <string> ID
+%token TRUE
+%token FALSE
+%token GEQ
+%token LEQ
+%token FDIVIDEDBY
+%token DIVIDEDBY
+%token FTIMES
+%token TIMES
+%token FMINUS
+%token MINUS
+%token FPLUS
+%token PLUS
+%token LPAREN
+%token RPAREN
+%token LET
+%token EQUALS
+%token IN
+%token IF
+%token THEN
+%token ELSE
+%token COLON
+%token INT_TYPE
+%token BOOL_TYPE
+%token FLOAT_TYPE
+%token EOF
+
+%nonassoc IN
+%nonassoc ELSE
+%left GEQ
+%left LEQ
+%left PLUS
+%left FPLUS
+%left MINUS
+%left FMINUS
+%left TIMES
+%left FTIMES
+%left DIVIDEDBY
+%left FDIVIDEDBY
+
+%start <Ast.expr> prog
+
+%%
+
+prog:
+	| e = expr; EOF { e }
+	;
+	
+expr:
+	| i = INT { Int i }
+	| f = FLOAT { Float f}
+  	| x = ID { Var x }
+  	| TRUE { Bool true }
+  	| FALSE { Bool false }
+	| e1 = expr; GEQ; e2 = expr { Binop (Geq, e1, e2) }
+  	| e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) }
+	| e1 = expr; DIVIDEDBY; e2 = expr { Binop (Div, e1, e2) }
+	| e1 = expr; FDIVIDEDBY; e2 = expr { Binop (Fdiv, e1, e2) }
+  	| e1 = expr; TIMES; e2 = expr { Binop (Mult, e1, e2) }
+	| e1 = expr; FTIMES; e2 = expr { Binop (Fmult, e1, e2) }
+	| e1 = expr; MINUS; e2 = expr { Binop (Subt, e1, e2) }
+	| e1 = expr; FMINUS; e2 = expr { Binop (Fsubt, e1, e2) }
+  	| e1 = expr; PLUS; e2 = expr { Binop (Add, e1, e2) }
+	| e1 = expr; FPLUS; e2 = expr { Binop (Fadd, e1, e2) }
+  	| LET; x = ID; COLON; t = typ; EQUALS; e1 = expr; IN; e2 = expr 
+		{ Let (x, t, e1, e2) }
+  	| IF; e1 = expr; THEN; e2 = expr; ELSE; e3 = expr { If (e1, e2, e3) }
+  	| LPAREN; e=expr; RPAREN {e}
+	;
+
+typ: 
+	| INT_TYPE { TInt }
+	| BOOL_TYPE { TBool }
+	| FLOAT_TYPE { TFloat }
