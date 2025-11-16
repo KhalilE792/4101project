@@ -39,10 +39,11 @@ open Ast
 %left FPLUS
 %left MINUS
 %left FMINUS
-%left TIMES
-%left FTIMES
 %left DIVIDEDBY
 %left FDIVIDEDBY
+%left TIMES
+%left FTIMES
+
 
 %start <Ast.expr> prog
 
