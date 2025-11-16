@@ -71,7 +71,6 @@ let rec typeof env = function
   | Let (x, t ,e1, e2) -> typeof_let env x t e1 e2
   | Binop (bop, e1, e2) -> typeof_bop env bop e1 e2
   | If (e1, e2, e3) -> typeof_if env e1 e2 e3
-  | _ -> failwith "TODO"
   
 (** Helper function for [typeof]. *)
 and typeof_let env x t e1 e2 = 
@@ -133,7 +132,6 @@ let rec subst e v x = match e with
     else Let (y, t, e1', subst e2 v x)
   | If (e1, e2, e3) -> 
     If (subst e1 v x, subst e2 v x, subst e3 v x)
-  | _ -> failwith "TODO"
   
 (** [eval e] the [v]such that [e ==> v]. *)
 let rec eval (e : expr) : expr = match e with
@@ -142,7 +140,6 @@ let rec eval (e : expr) : expr = match e with
   | Binop (bop, e1, e2) -> eval_bop bop e1 e2
   | Let (x, _, e1, e2) -> subst e2 (eval e1) x|> eval
   | If (e1, e2, e3) -> eval_if e1 e2 e3
-  | _ -> failwith "TODO"
 
 (** [eval_let x e1 e2] is the [v] such that [let x = e1 in e2 ==> v]. *) 
 and eval_let x e1 e2 = 
@@ -157,10 +154,10 @@ and eval_bop bop e1 e2 =
   | Subt, Int a, Int b -> Int (a - b)
   | Mult, Int a, Int b -> Int (a * b)
   | Div, Int a, Int b -> Int (a / b)
-  | Fadd, Float a, Float b -> Float (round_dfrac 2 a +. round_dfrac 2 b)
-  | Fsubt, Float a, Float b -> Float (round_dfrac 2 a -. round_dfrac 2 b)
-  | Fmult, Float a, Float b -> Float (round_dfrac 2 a *. round_dfrac 2 b)
-  | Fdiv, Float a, Float b -> Float (round_dfrac 2 a /. round_dfrac 2 b)
+  | Fadd, Float a, Float b -> Float (round_dfrac 2 (a +. b))
+  | Fsubt, Float a, Float b -> Float (round_dfrac 2 (a -. b))
+  | Fmult, Float a, Float b -> Float (round_dfrac 2 (a *. b))
+  | Fdiv, Float a, Float b -> Float (round_dfrac 2 (a /. b))
   | Leq , Int a, Int b -> Bool (a <= b)
   | Geq , Int a, Int b -> Bool (a >= b)
   | Leq , Float a, Float b -> Bool (a <= b)
